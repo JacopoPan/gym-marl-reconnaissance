@@ -3,6 +3,7 @@ TODOs.md
 examples/debug.py
 examples/test.py
 z_example_numpy.py
+legacy/
 
 # macOS users
 .DS_Store
