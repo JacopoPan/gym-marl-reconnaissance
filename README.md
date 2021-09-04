@@ -33,7 +33,7 @@ Replay the trained agent
 $ python ./experiments/test.py --exp ./results/exp-<algo>-<date>_<time>
 ```
 
-<img src="figures/task.gif" alt="figure" width="390"> <img src="figures/track.gif" alt="figure" width="390">
+<img src="figures/task.gif" alt="figure" width="400"> <img src="figures/track.gif" alt="figure" width="400">
 
 ## References
 TBD
