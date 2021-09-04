@@ -1,25 +1,18 @@
-"""General use functions
-
-More text.
-
-Notes
------
-Lorem ipsum
+"""General use functions.
 
 """
 import time
 import argparse
 import numpy as np
-from scipy.optimize import nnls
 
 
 def sync(i,
          start_time,
-         timestep):
+         timestep
+         ):
     """Syncs the stepped simulation with the wall-clock.
 
-    Function `sync` calls time.sleep() to pause a for-loop
-    running faster than the expected timestep.
+    Function `sync` calls time.sleep() to pause a for-loop running faster than the expected timestep.
 
     Parameters
     ----------
@@ -58,4 +51,4 @@ def str2bool(val):
     elif val.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
     else:
-        raise argparse.ArgumentTypeError("[ERROR] in str2bool(), a Boolean value is expected")
+        raise argparse.ArgumentTypeError('[ERROR] in str2bool(), a Boolean value is expected')

@@ -1,7 +1,7 @@
-# TODOs 
+# TODOs, debugging, and temporary files
 TODOs.md
-examples/debug.py
-examples/test.py
+saves/video-*
+results/exp-*
 z_example_numpy.py
 legacy/
 

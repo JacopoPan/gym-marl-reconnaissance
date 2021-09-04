@@ -1,1 +1,1 @@
-from gym_marl_reconnaissance.envs.ModuleFile import ClassName
+from gym_marl_reconnaissance.envs.recon_arena import ReconArena

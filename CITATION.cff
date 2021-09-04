@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Panerati"
+  given-names: "Jacopo"
+  orcid: "https://orcid.org/0000-0003-2994-5422"
+title: "gym-marl-reconnaissance"
+version: 0.0.1
+doi: 10.5281/zenodo.1234
+date-released: 2021-09-04
+url: "https://github.com/JacopoPan/gym-marl-reconnaissance"
