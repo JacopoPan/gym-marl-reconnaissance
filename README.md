@@ -2,7 +2,7 @@
 
 Gym environments for heterogeneous multi-agent reinforcement learning in non-stationary worlds
 
-> This repository's `master` branch is actively developed, please `git pull` frequently and feel free to open new [issues](https://github.com/JacopoPan/gym-marl-reconnaissance/issues) for any undesired, unexpected, or (presumably) incorrect behavior. Thanks 🙏
+> This repository's `master` branch is work in progress, please `git pull` frequently and feel free to open new [issues](https://github.com/JacopoPan/gym-marl-reconnaissance/issues) for any undesired, unexpected, or (presumably) incorrect behavior. Thanks 🙏
 
 ## Install on Ubuntu/macOS
 
@@ -24,19 +24,20 @@ Step an environment with random action inputs
 ```
 $ python ./experiments/debug.py --gui True --record False --debug True
 ```
+Step an environment with a greedy policy
+```
+TBD
+```
 Learn using [`stable-baselines3`](https://stable-baselines3.readthedocs.io/en/master/)
 ```
 $ python ./experiments/train.py --algo <a2c | ppo | sac | td3 | ddpg>
 ```
-Replay the trained agent
+Replay a trained agent
 ```
 $ python ./experiments/test.py --exp ./results/exp-<algo>-<date>_<time>
 ```
 
 <img src="figures/task.gif" alt="figure" width="400"> <img src="figures/track.gif" alt="figure" width="400">
-
-## References
-TBD
 
 -----
 > University of Toronto's [Dynamic Systems Lab](https://github.com/utiasDSL) / [Vector Institute](https://github.com/VectorInstitute) /  [Mitacs](https://www.mitacs.ca/en/projects/multi-agent-reinforcement-learning-decentralized-uavugv-cooperative-exploration)
