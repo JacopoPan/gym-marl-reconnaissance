@@ -136,6 +136,7 @@ class ReconArena(gym.Env):
         # Setup physical attributes.
         self._GRAVITY_ACC = 9.8
         self._TT_MASS = 0.08
+        self._VEL_SCALE = 1
         # Setup environment's (and agent's) attributes.
         self._VISIBILITY_THRESHOLD = visibility_threshold
         self._ACTION_TYPE = action_type
@@ -459,6 +460,7 @@ class ReconArena(gym.Env):
                 connecting_vector = np.array(pos2[0:2]) - np.array(pos1[0:2])
                 # Move along the connecting direction.
                 vel = 2 * (connecting_vector / np.linalg.norm(connecting_vector))
+                vel *= self._VEL_SCALE
                 if i < self._NUM_TT:  # Tellos.
                     p.resetBaseVelocity(objectUniqueId=agent_id,
                                         linearVelocity=[vel[0], vel[1], 0],
@@ -496,6 +498,7 @@ class ReconArena(gym.Env):
                 else:
                     raise ValueError('')
                 vel = 1.2 * np.array(vel)  # Speed correction.
+                vel *= self._VEL_SCALE
                 if i < self._NUM_TT:  # Tellos.
                     p.resetBaseVelocity(objectUniqueId=agent_id,
                                         linearVelocity=[vel[0], vel[1], 0],
@@ -522,6 +525,7 @@ class ReconArena(gym.Env):
                 if np.random.binomial(1, 0.05):
                     self._adversary_directions[i] = -self._adversary_directions[i]
                 vel = self._adversary_directions[i] * self._ADVERSARY_SPEEDS[i] * np.array([1, -1])
+                vel *= self._VEL_SCALE
                 fall, _ = p.getBaseVelocity(self._ADVERSARY_IDS[i], physicsClientId=self.PYB_CLIENT)
                 p.resetBaseVelocity(objectUniqueId=self._ADVERSARY_IDS[i],
                                     linearVelocity=[vel[0], vel[1], fall[2]],
@@ -550,6 +554,7 @@ class ReconArena(gym.Env):
                     if np.random.binomial(1, 0.05):
                         self._adversary_directions[i] = -self._adversary_directions[i]
                     vel = self._adversary_directions[i] * self._ADVERSARY_SPEEDS[i] * np.array([1, -1])
+                vel *= self._VEL_SCALE
                 fall, _ = p.getBaseVelocity(self._ADVERSARY_IDS[i], physicsClientId=self.PYB_CLIENT)
                 p.resetBaseVelocity(objectUniqueId=self._ADVERSARY_IDS[i],
                                     linearVelocity=[vel[0], vel[1], fall[2]],
