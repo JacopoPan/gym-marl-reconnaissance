@@ -56,12 +56,12 @@ def main():
             _ = env.reset()
             num_episodes += 1
         if ARGS.gui:
-            sync(i, START, env.CTRL_TIMESTEP)
+            sync(i, START, 1/env.CTRL_FREQ)
     env.close()
     elapsed_sec = time.time() - START
     # Print timing statistics.
     print("\n{:d} control steps (@{:d}Hz) and {:d} episodes in {:.2f} seconds, i.e. {:.2f} steps/sec for a {:.2f}x speedup.\n"
-          .format(STEPS, env.CTRL_FREQ, num_episodes, elapsed_sec, STEPS/elapsed_sec, (STEPS*env.CTRL_TIMESTEP)/elapsed_sec))
+          .format(STEPS, env.CTRL_FREQ, num_episodes, elapsed_sec, STEPS/elapsed_sec, (STEPS/env.CTRL_FREQ)/elapsed_sec))
 
 
 if __name__ == '__main__':

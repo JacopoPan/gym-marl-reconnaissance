@@ -83,7 +83,7 @@ def main():
         print(reward)
         print()
         test_env.render()
-        sync(i, START, test_env.CTRL_TIMESTEP)
+        sync(i, START, 1/test_env.CTRL_FREQ)
     test_env.close()
 
 
