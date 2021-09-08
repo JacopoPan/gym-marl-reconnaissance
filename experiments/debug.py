@@ -9,9 +9,11 @@ In a terminal, run as:
     $ python debug.py --gui True --record False --debug True
 
 """
+import os
 import time
 import argparse
 import gym
+import yaml
 import numpy as np
 
 import gym_marl_reconnaissance
@@ -31,13 +33,19 @@ def main():
     parser.add_argument('--record', default=False, type=str2bool)
     parser.add_argument('--debug', default=True, type=str2bool)
     ARGS = parser.parse_args()
+    # Load YAML
+    with open(os.path.dirname(os.path.abspath(__file__))+'/defaults.yaml', 'r') as yaml_file:
+        YAML_DICT = yaml.safe_load(yaml_file)
+    # Merge ARGS and YAML
+    YAML_DICT['gui'] = ARGS.gui
+    YAML_DICT['record'] = ARGS.record
+    YAML_DICT['debug'] = ARGS.debug
+    # (TEMP) Dump YAML
+    # with open(os.path.dirname(os.path.abspath(__file__))+'/save.yaml', 'w') as outfile:
+    #     yaml.dump(YAML_DICT, outfile, default_flow_style=False)
     # Create an environment.
     env = gym.make('recon-arena-v0',
-                   gui=ARGS.gui,
-                   record=ARGS.record,
-                   debug=ARGS.debug,
-                   action_type=ActionType.TRACKING,
-                   setup={'edge':10, 'obstacles':3, 'tt':3, 's1':2, 'adv':3, 'neu':2},
+                   **YAML_DICT
                    )
     initial_obs = env.reset()
     START = time.time()

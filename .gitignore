@@ -1,5 +1,6 @@
 # TODOs, debugging, and temporary files
 TODOs.md
+experiments/save.yaml
 saves/video-*
 results/exp-*
 z_example_numpy.py
