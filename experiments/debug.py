@@ -18,6 +18,7 @@ import gym_marl_reconnaissance
 
 from gym_marl_reconnaissance.envs.recon_arena import ActionType, ObsType, RewardChoice, AdversaryType
 from gym_marl_reconnaissance.utils.utils import sync, str2bool
+from gym_marl_reconnaissance.utils.greedy import greedy_task_assignment, greedy_tracking
 
 
 def main():
