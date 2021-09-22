@@ -1,8 +1,10 @@
 # TODOs, debugging, and temporary files
 TODOs.md
-experiments/save.yaml
-saves/video-*
-results/exp-*
+experiments/launch.sh
+experiments/temp.py
+experiments/configurations/ex*.yaml
+saves/*.mp4
+results/*exp--*
 z_example_numpy.py
 legacy/
 

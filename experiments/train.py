@@ -15,6 +15,7 @@ import argparse
 import subprocess
 import gym
 import torch
+import yaml
 import numpy as np
 
 from datetime import datetime
@@ -43,13 +44,24 @@ def main():
     parser.add_argument('--algo',
                         default='a2c',
                         type=str,
-                        choices=['a2c', 'ppo', 'sac', 'td3', 'ddpg'])
+                        choices=['a2c', 'ppo']) # Not supporting multi-discrete actions 'sac', 'td3', 'ddpg'
+    parser.add_argument('--yaml', default='defaults.yaml', type=str)
+    parser.add_argument('--steps', default=1e3, type=int)
     ARGS = parser.parse_args()
-    filename = os.path.dirname(os.path.abspath(__file__))+'/../results/exp-'+ARGS.algo+'-'+datetime.now().strftime("%m.%d.%Y_%H.%M.%S")
+    # Load YAML.
+    with open(os.path.dirname(os.path.abspath(__file__))+'/configurations/'+ARGS.yaml, 'r') as yaml_file:
+        YAML_DICT = yaml.safe_load(yaml_file)
+    # Create save path.
+    experiment_name = str(ARGS.algo)+'--'+str(YAML_DICT['action_type'])+'--'+str(YAML_DICT['adv_type']) \
+                        +'--n_ad-'+str(YAML_DICT['setup']['adv']) \
+                        +'--n_ne-'+str(YAML_DICT['setup']['neu']) \
+                        +'--n_tt-'+str(YAML_DICT['setup']['tt']) \
+                        +'--n_s1-'+str(YAML_DICT['setup']['s1'])
+    filename = os.path.dirname(os.path.abspath(__file__))+'/../results/exp--'+experiment_name+'--'+datetime.now().strftime("%m.%d.%Y_%H.%M.%S")
     if not os.path.exists(filename):
         os.makedirs(filename+'/')
     # Create the training environment.
-    train_env = gym.make('recon-arena-v0')
+    train_env = gym.make('recon-arena-v0', **YAML_DICT)
     check_env(train_env,
               warn=True,
               skip_render_check=True
@@ -92,23 +104,27 @@ def main():
                     tensorboard_log=filename+'/tb/',
                     verbose=1)
     # Create an evaluation environment.
-    eval_env = Monitor(gym.make('recon-arena-v0'), filename+'/')
+    eval_env = Monitor(gym.make('recon-arena-v0', **YAML_DICT), filename+'/')
     # Stopping condition on reward.
-    callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=1e3,
+    callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=1e5,
                                                      verbose=1
                                                      )
-   # Save the best model.
-   eval_callback = EvalCallback(eval_env,
-                                callback_on_new_best=callback_on_best,
-                                verbose=1,
-                                best_model_save_path=filename+'/',
-                                log_path=filename+'/',
-                                eval_freq=int(2000),
-                                deterministic=True,
-                                render=False
-                                )
+    # Save the best model.
+    eval_callback = EvalCallback(eval_env,
+                                 callback_on_new_best=callback_on_best,
+                                 verbose=1,
+                                 best_model_save_path=filename+'/',
+                                 log_path=filename+'/',
+                                 eval_freq=int(2000),
+                                 deterministic=True,
+                                 render=False
+                                 )
+    # Dump YAML.
+    YAML_DICT['algo'] = ARGS.algo
+    with open(filename+'/save.yaml', 'w') as outfile:
+        yaml.dump(YAML_DICT, outfile, default_flow_style=False)
     # Train.
-    model.learn(total_timesteps=1e6,
+    model.learn(total_timesteps=ARGS.steps, # 1e6,
                 callback=eval_callback,
                 log_interval=100
                 )

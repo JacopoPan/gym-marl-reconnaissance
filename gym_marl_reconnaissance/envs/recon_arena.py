@@ -27,6 +27,9 @@ class ObsType(str, Enum):
     """
 
     GLOBAL = 'global'
+    TEST_1 = 'test_1'
+    TEST_2 = 'test_2'
+    TEST_3 = 'test_3'
 
 
 class RewardChoice(str, Enum):
@@ -35,6 +38,8 @@ class RewardChoice(str, Enum):
     """
 
     REWARD_A = 'reward_a'
+    REWARD_B = 'reward_b'
+    REWARD_C = 'reward_c'
 
 
 class AdversaryType(str, Enum):
@@ -67,7 +72,7 @@ class ReconArena(gym.Env):
     """
 
     def __init__(self,
-                 seed: int = 1337,
+                 seed: int = -1,
                  ctrl_freq: int = 5,
                  pyb_freq: int = 60,
                  gui: bool = False,
@@ -85,14 +90,6 @@ class ReconArena(gym.Env):
 
         Parameters
         ----------
-        param1 : str
-            Description of `param1`.
-        param2 : :obj:`list` of :obj:`str`
-            Description of `param2`. Multiple
-            lines are supported.
-        param3 : :obj:`int`, optional
-            Description of `param3`.
-
         seed : int, optional
             The randomization seed.
         ctrl_freq : int, optional
@@ -122,7 +119,10 @@ class ReconArena(gym.Env):
             Whether to draw debug information on PyBullet's GUI.
 
         """
-        np.random.seed(seed)
+        if seed == -1:
+            np.random.seed()
+        else:
+            np.random.seed(seed)
         super(ReconArena, self).__init__()
         # Setup timing attributes.
         self.CTRL_FREQ = ctrl_freq
@@ -184,7 +184,7 @@ class ReconArena(gym.Env):
                                                          physicsClientId=self.PYB_CLIENT)
         FRAME_PER_SEC = 30
         if (self.PYB_FREQ%FRAME_PER_SEC) !=0 or (self.PYB_FREQ < FRAME_PER_SEC):
-            raise ValueError('')
+            raise ValueError('[ERROR] invalid choice for the number of frames per second in the recording.')
         self._CAPTURE_FREQ = int(self.PYB_FREQ/FRAME_PER_SEC)
         self._DEBUG = debug
         # Make initial reset mandatory.
@@ -358,7 +358,7 @@ class ReconArena(gym.Env):
             NUM_OPTIONS = 5  # Stay, forward, backward, left, right.
             return gym.spaces.MultiDiscrete(np.repeat(NUM_OPTIONS, NUM_AGENTS))
         else:
-            raise ValueError('')
+            raise ValueError('[ERROR] invalid action type.')
 
     def _set_observation_space(self):
         """Create the observation space of the environment.
@@ -374,8 +374,17 @@ class ReconArena(gym.Env):
             return gym.spaces.Box(low=-np.inf * np.ones(OBS_SIZE),
                                   high=np.inf * np.ones(OBS_SIZE),
                                   dtype=np.float32)
+        elif self._OBS_TYPE == ObsType.TEST_1:
+            # TBD
+            pass
+        elif self._OBS_TYPE == ObsType.TEST_2:
+            # TBD
+            pass
+        elif self._OBS_TYPE == ObsType.TEST_3:
+            # TBD
+            pass
         else:
-            raise ValueError('')
+            raise ValueError('[ERROR] invalid observation type.')
 
     def _compute_obs(self):
         """Compute the environment observation's from its internal state.
@@ -407,8 +416,17 @@ class ReconArena(gym.Env):
             for i in range(self._NUM_OBSTACLES):
                 temp_obs = np.hstack([temp_obs, self.state['obst_'+str(i)]['id'], self.state['obst_'+str(i)]['class'], self.state['obst_'+str(i)]['pos']]) 
             return temp_obs
+        elif self._OBS_TYPE == ObsType.TEST_1:
+            # TBD
+            pass
+        elif self._OBS_TYPE == ObsType.TEST_2:
+            # TBD
+            pass
+        elif self._OBS_TYPE == ObsType.TEST_3:
+            # TBD
+            pass
         else:
-            raise ValueError('')
+            raise ValueError('[ERROR] invalid observation type.')
 
     def _compute_reward(self):
         """Compute the environment's reward signal.
@@ -436,8 +454,55 @@ class ReconArena(gym.Env):
                 if min(dist) < 1.5:  # Within the tellos' altitude.
                     reward += 1
             return reward
+        elif self._REWARD_CHOICE == RewardChoice.REWARD_B:
+            reward = 0
+            # Get the tellos and robomasters positions.
+            tt_s1_positions = np.zeros((self._NUM_TT + self._NUM_S1, 3))
+            for i in range(self._NUM_TT):
+                pos, _ = p.getBasePositionAndOrientation(self._TT_IDS[i], physicsClientId=self.PYB_CLIENT)
+                tt_s1_positions[i, :] = pos
+            for i in range(self._NUM_S1):
+                pos, _ = p.getBasePositionAndOrientation(self._S1_IDS[i], physicsClientId=self.PYB_CLIENT)
+                tt_s1_positions[self._NUM_TT + i, :] = pos
+            # For every adversary check whether there is a nearby tello or robomaster.
+            for i in range(self._NUM_ADVERSARY):
+                pos1, _ = p.getBasePositionAndOrientation(self._ADVERSARY_IDS[i], physicsClientId=self.PYB_CLIENT)
+                dist = np.linalg.norm(tt_s1_positions - np.array(pos1), axis=1)
+                # Reward inversely proportional to the closes tello or robomaster.
+                reward += 1/(min(dist)+0.01)
+            return reward
+        elif self._REWARD_CHOICE == RewardChoice.REWARD_C:
+            reward = 0
+            # Get the tellos and robomasters positions.
+            tt_s1_positions = np.zeros((self._NUM_TT + self._NUM_S1, 3))
+            adv_positions = np.zeros((self._NUM_ADVERSARY, 3))
+            for i in range(self._NUM_TT):
+                pos, _ = p.getBasePositionAndOrientation(self._TT_IDS[i], physicsClientId=self.PYB_CLIENT)
+                tt_s1_positions[i, :] = pos
+            for i in range(self._NUM_S1):
+                pos, _ = p.getBasePositionAndOrientation(self._S1_IDS[i], physicsClientId=self.PYB_CLIENT)
+                tt_s1_positions[self._NUM_TT + i, :] = pos
+            # For every adversary check whether there is a nearby tello or robomaster.
+            for i in range(self._NUM_ADVERSARY):
+                pos1, _ = p.getBasePositionAndOrientation(self._ADVERSARY_IDS[i], physicsClientId=self.PYB_CLIENT)
+                adv_positions[i, :] = pos1
+                dist = np.linalg.norm(tt_s1_positions - np.array(pos1), axis=1)
+                # Reward inversely proportional to the closest tello or robomaster.
+                reward += 1/(min(dist)**2+0.01)
+            # Penalize lack of tracking.
+            for i in range(self._NUM_TT):
+                pos1, _ = p.getBasePositionAndOrientation(self._TT_IDS[i], physicsClientId=self.PYB_CLIENT)
+                dist = np.linalg.norm(adv_positions - np.array(pos1), axis=1)
+                # Reward inversely proportional to the closest adversary.
+                reward += 0.25/(min(dist)**2+0.01)
+            for i in range(self._NUM_S1):
+                pos1, _ = p.getBasePositionAndOrientation(self._S1_IDS[i], physicsClientId=self.PYB_CLIENT)
+                dist = np.linalg.norm(adv_positions - np.array(pos1), axis=1)
+                # Reward inversely proportional to the closest adversary.
+                reward += 0.25/(min(dist)**2+0.01)
+            return reward
         else:
-            raise ValueError('')
+            raise ValueError('[ERROR] invalid reward choice.')
 
     def _apply_action(self,
                       action
@@ -513,7 +578,7 @@ class ReconArena(gym.Env):
                                         physicsClientId=self.PYB_CLIENT
                                         )
         else:
-            raise ValueError('')
+            raise ValueError('[ERROR] invalid action type.')
 
     def _nonstationary_adversary(self):
         """Set (in PyBullet) the velocities of the non-learning adversarial agents.
@@ -562,7 +627,7 @@ class ReconArena(gym.Env):
                                     physicsClientId=self.PYB_CLIENT
                                     )
         else:
-            raise ValueError('')
+            raise ValueError('[ERROR] invalid adversary type type.')
 
     def _nonstationary_neutral(self):
         """Set (in PyBullet) the velocities of the non-learning neutral agents.
@@ -633,7 +698,7 @@ class ReconArena(gym.Env):
             temp_dict['vel'], _ = p.getBaseVelocity(self._ADVERSARY_IDS[i], physicsClientId=self.PYB_CLIENT)
             # Check whether within the visibility range.
             dist = np.linalg.norm(tt_s1_positions - np.array(temp_dict['pos']), axis=1)
-            in_range = np.squeeze(dist < self._VISIBILITY_THRESHOLD)
+            in_range = np.atleast_1d(np.squeeze(dist < self._VISIBILITY_THRESHOLD))
             # Check whether in line of sight.
             temp_repeated_to_rays = []
             for _ in range(tt_s1_positions.shape[0]):
@@ -655,10 +720,10 @@ class ReconArena(gym.Env):
                         in_sight += [True]
                     else:
                         in_sight += [False]
-                in_sight = np.squeeze(in_sight)
+                in_sight = np.atleast_1d(np.squeeze(in_sight))
                 temp_dict['visibility'] = np.any(in_sight & in_range)
             else:
-                raise ValueError('')
+                raise ValueError('[ERROR] invalid number of obstacles.')
             self.state['adv_'+str(i)] = temp_dict
             # Add line-of-sight debug information on the GUI.
             if self._DEBUG:
@@ -691,7 +756,7 @@ class ReconArena(gym.Env):
             temp_dict['vel'], _ = p.getBaseVelocity(self._NEUTRAL_IDS[i], physicsClientId=self.PYB_CLIENT)
             # Check whether within the visibility range.
             dist = np.linalg.norm(tt_s1_positions - np.array(temp_dict['pos']), axis=1)
-            in_range = np.squeeze(dist < self._VISIBILITY_THRESHOLD)
+            in_range = np.atleast_1d(np.squeeze(dist < self._VISIBILITY_THRESHOLD))
             # Check whether in line of sight.
             temp_repeated_to_rays = []
             for _ in range(tt_s1_positions.shape[0]):
@@ -713,10 +778,10 @@ class ReconArena(gym.Env):
                         in_sight += [True]
                     else:
                         in_sight += [False]
-                in_sight = np.squeeze(in_sight)
+                in_sight = np.atleast_1d(np.squeeze(in_sight))
                 temp_dict['visibility'] = np.any(in_sight & in_range)
             else:
-                raise ValueError('')
+                raise ValueError('[ERROR] invalid number of obstacles.')
             self.state['neu_'+str(i)] = temp_dict
             # Add line-of-sight debug information on the GUI.
             if self._DEBUG:

@@ -32,36 +32,44 @@ def main():
     parser.add_argument('--gui', default=True, type=str2bool)
     parser.add_argument('--record', default=False, type=str2bool)
     parser.add_argument('--debug', default=True, type=str2bool)
+    parser.add_argument('--random', default=False, type=str2bool)
     ARGS = parser.parse_args()
-    # Load YAML
-    with open(os.path.dirname(os.path.abspath(__file__))+'/defaults.yaml', 'r') as yaml_file:
+    # Load YAML.
+    with open(os.path.dirname(os.path.abspath(__file__))+'/configurations/defaults.yaml', 'r') as yaml_file:
         YAML_DICT = yaml.safe_load(yaml_file)
-    # Merge ARGS and YAML
+    # Merge ARGS and YAML.
     YAML_DICT['gui'] = ARGS.gui
     YAML_DICT['record'] = ARGS.record
     YAML_DICT['debug'] = ARGS.debug
-    # (TEMP) Dump YAML
-    # with open(os.path.dirname(os.path.abspath(__file__))+'/save.yaml', 'w') as outfile:
-    #     yaml.dump(YAML_DICT, outfile, default_flow_style=False)
     # Create an environment.
     env = gym.make('recon-arena-v0',
                    **YAML_DICT
                    )
-    initial_obs = env.reset()
+    obs = env.reset()
     START = time.time()
-    STEPS = int(1e3)
+    STEPS = int(2e3)
     num_episodes = 1
+    total_reward = 0
     # Step the environment.
     for i in range(STEPS):
-        env.render()
-        action = env.action_space.sample()
+        # env.render()
+        if ARGS.random:
+            action = env.action_space.sample()
+        elif YAML_DICT['action_type'] == 'task_assignment':
+            action = greedy_task_assignment(obs, env.action_space.shape)
+        elif YAML_DICT['action_type'] == 'tracking':
+            action = greedy_tracking(obs, env.action_space.shape)
         obs, reward, done, _ = env.step(action)
-        print(i)
-        print(action)
-        print(obs)
-        print(reward, done)
-        print()
+        # print(i)
+        # print(action)
+        # print(obs)
+        # print(reward, done)
+        # print()
+        total_reward += reward
         if done:
+            print(total_reward, ',')
+            # exit()
+            total_reward = 0
             _ = env.reset()
             num_episodes += 1
         if ARGS.gui:
@@ -69,7 +77,7 @@ def main():
     env.close()
     elapsed_sec = time.time() - START
     # Print timing statistics.
-    print("\n{:d} control steps (@{:d}Hz) and {:d} episodes in {:.2f} seconds, i.e. {:.2f} steps/sec for a {:.2f}x speedup.\n"
+    print('\n{:d} control steps (@{:d}Hz) and {:d} episodes in {:.2f} seconds, i.e. {:.2f} steps/sec for a {:.2f}x speedup.\n'
           .format(STEPS, env.CTRL_FREQ, num_episodes, elapsed_sec, STEPS/elapsed_sec, (STEPS/env.CTRL_FREQ)/elapsed_sec))
 
 

@@ -15,7 +15,9 @@ import argparse
 import subprocess
 import gym
 import torch
+import yaml
 import numpy as np
+import matplotlib.pyplot as plt
 
 from datetime import datetime
 from stable_baselines3 import A2C
@@ -37,27 +39,62 @@ def main():
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('--exp', type=str)
     ARGS = parser.parse_args()
-    algo = ARGS.exp.split('-')[1]
+    # Load YAML.
+    with open(ARGS.exp+'/save.yaml', 'r') as yaml_file:
+        YAML_DICT = yaml.safe_load(yaml_file)
     # Load the final or best model.
     if os.path.isfile(ARGS.exp+'/success_model.zip'):
         path = ARGS.exp+'/success_model.zip'
     elif os.path.isfile(ARGS.exp+'/best_model.zip'):
         path = ARGS.exp+'/best_model.zip'
     else:
-        raise ValueError('[ERROR]: no model under the specified path', ARGS.exp)
+        raise ValueError('[ERROR] no model under the specified path', ARGS.exp)
     # Create and load the model.
-    if algo == 'a2c':
+    if YAML_DICT['algo'] == 'a2c':
         model = A2C.load(path)
-    if algo == 'ppo':
+    if YAML_DICT['algo'] == 'ppo':
         model = PPO.load(path)
-    if algo == 'sac':
+    if YAML_DICT['algo'] == 'sac':
         model = SAC.load(path)
-    if algo == 'td3':
+    if YAML_DICT['algo'] == 'td3':
         model = TD3.load(path)
-    if algo == 'ddpg':
+    if YAML_DICT['algo'] == 'ddpg':
         model = DDPG.load(path)
+    YAML_DICT.pop('algo')
+    # Plot evaluations
+    with np.load(ARGS.exp+'/evaluations.npz') as data:
+        # print(data.files)
+        # print(data['timesteps'])
+        # print(data['results'])
+        # print(data['ep_lengths'])
+        print('mean', np.mean(data['results']), 'std', np.std(data['results']),
+              'max', np.max(data['results']), 'min', np.min(data['results']),
+              'Q1', np.percentile(data['results'], 25), 'median', np.percentile(data['results'], 50), 'Q3', np.percentile(data['results'], 75)
+              )
+        length = len(data['results'])
+        print('last 90 percent of training')
+        start_index = length//10
+        remaining_data = data['results'][start_index:]
+        print('mean', np.mean(remaining_data), 'std', np.std(remaining_data),
+              'max', np.max(remaining_data), 'min', np.min(remaining_data),
+              'Q1', np.percentile(remaining_data, 25), 'median', np.percentile(remaining_data, 50), 'Q3', np.percentile(remaining_data, 75)
+              )
+        print('last 80 percent of training')
+        start_index = length//5
+        remaining_data = data['results'][start_index:]
+        print('mean', np.mean(remaining_data), 'std', np.std(remaining_data),
+              'max', np.max(remaining_data), 'min', np.min(remaining_data),
+              'Q1', np.percentile(remaining_data, 25), 'median', np.percentile(remaining_data, 50), 'Q3', np.percentile(remaining_data, 75)
+              )
+        fig, (ax0) = plt.subplots(nrows=1, ncols=1, sharex=True, figsize=(12, 6))
+        ax0.set_title('all errorbars')
+        ax0.errorbar(data['timesteps'], np.mean(data['results'], axis=1), yerr=np.std(data['results'], axis=1))
+        # ax0.errorbar(data['timesteps'], np.mean(data['results'], axis=1)) #, yerr=y2err)
+        fig.suptitle('Errorbar subsampling')
+        plt.show()
+        exit()
     # Create an evaluation environment.
-    eval_env = gym.make('recon-arena-v0')
+    eval_env = gym.make('recon-arena-v0', **YAML_DICT)
     # Evaluate the policy.
     mean_reward, std_reward = evaluate_policy(model,
                                               eval_env,
@@ -65,10 +102,11 @@ def main():
                                               )
     print('\n\n\nMean reward ', mean_reward, ' +- ', std_reward, '\n\n')
     # Create a replay environment.
+    YAML_DICT['gui'] = True
+    YAML_DICT['record'] = True
+    YAML_DICT['debug'] = True
     test_env = gym.make('recon-arena-v0',
-                        gui=True,
-                        record=True,
-                        debug=True
+                        **YAML_DICT
                         )
     # Replay the trained model.
     obs = test_env.reset()
