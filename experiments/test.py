@@ -89,10 +89,11 @@ def main():
         fig, (ax0) = plt.subplots(nrows=1, ncols=1, sharex=True, figsize=(12, 6))
         ax0.set_title('all errorbars')
         ax0.errorbar(data['timesteps'], np.mean(data['results'], axis=1), yerr=np.std(data['results'], axis=1))
-        # ax0.errorbar(data['timesteps'], np.mean(data['results'], axis=1)) #, yerr=y2err)
         fig.suptitle('Errorbar subsampling')
         plt.show()
-        exit()
+        for i in range(len(data['timesteps'])):
+            print(str(data['timesteps'][i])+','+str(np.mean(data['results'][i,:]))+','+str(np.std(data['results'][i,:])))
+        # exit()
     # Create an evaluation environment.
     eval_env = gym.make('recon-arena-v0', **YAML_DICT)
     # Evaluate the policy.
@@ -102,6 +103,7 @@ def main():
                                               )
     print('\n\n\nMean reward ', mean_reward, ' +- ', std_reward, '\n\n')
     # Create a replay environment.
+    # YAML_DICT['seed'] = 1337
     YAML_DICT['gui'] = True
     YAML_DICT['record'] = True
     YAML_DICT['debug'] = True
