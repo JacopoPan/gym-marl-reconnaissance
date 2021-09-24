@@ -5,6 +5,7 @@ experiments/temp.py
 experiments/configurations/ex*.yaml
 saves/*.mp4
 results/*exp--*
+results/list.txt
 z_example_numpy.py
 legacy/
 
