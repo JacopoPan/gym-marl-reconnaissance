@@ -18,23 +18,48 @@ $ cd gym-marl-reconnaissance                                       # Enter the r
 $ pip install -e .                                                 # Install the repository
 ```
 
+## Configure
+
+Set the parameters of the simulation environment
+```
+seed: -1
+ctrl_freq: 2
+pyb_freq: 30
+gui: False
+record: False
+episode_length_sec: 30
+action_type: 'task_assignment'      # Alternatively, 'tracking'
+obs_type: 'global'
+reward_choice: 'reward_c'
+adv_type: 'avoidant'                # Alternatively, 'blind'
+visibility_threshold: 12
+setup:
+  edge: 10
+  obstacles: 0
+  tt: 1
+  s1: 1
+  adv: 2
+  neu: 1
+debug: False
+```
+
 ## Use
 
 Step an environment with random action inputs
 ```
-$ python ./experiments/debug.py --gui True --record False --debug True
+$ python3 ./experiments/debug.py --random True
 ```
-Step an environment with a greedy policy
+Step an environment with a greedy policy (**only for `task_assignment`**)
 ```
-TBD
+$ python3 ./experiments/debug.py
 ```
 Learn using [`stable-baselines3`](https://stable-baselines3.readthedocs.io/en/master/)
 ```
-$ python ./experiments/train.py --algo <a2c | ppo | sac | td3 | ddpg>
+$ python ./experiments/train.py --algo <a2c | ppo> --yaml <filname in ./experiments/configurations/>
 ```
 Replay a trained agent
 ```
-$ python ./experiments/test.py --exp ./results/exp-<algo>-<date>_<time>
+$ python ./experiments/test.py --exp ./results/exp--<algo>--<config>--<date>_<time>
 ```
 
 <img src="figures/task.gif" alt="figure" width="400"> <img src="figures/track.gif" alt="figure" width="400">
