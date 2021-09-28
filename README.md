@@ -4,6 +4,8 @@ Gym environments for heterogeneous multi-agent reinforcement learning in non-sta
 
 > This repository's `master` branch is work in progress, please `git pull` frequently and feel free to open new [issues](https://github.com/JacopoPan/gym-marl-reconnaissance/issues) for any undesired, unexpected, or (presumably) incorrect behavior. Thanks 🙏
 
+<img src="figures/schematics.png" alt="figure" width="800">
+
 ## Install on Ubuntu/macOS
 
 (optional) Create and access a Python 3.7 environment using [`conda`](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
@@ -43,6 +45,8 @@ setup:
 debug: False
 ```
 
+<img src="figures/task.gif" alt="figure" width="400"> <img src="figures/track.gif" alt="figure" width="400">
+
 ## Use
 
 Step an environment with random action inputs
@@ -62,7 +66,16 @@ Replay a trained agent
 $ python ./experiments/test.py --exp ./results/exp--<algo>--<config>--<date>_<time>
 ```
 
-<img src="figures/task.gif" alt="figure" width="400"> <img src="figures/track.gif" alt="figure" width="400">
+## Results
+
+Task assignment
+
+<img src="figures/task.png" alt="figure" width="800">
+
+Tracking
+
+<img src="figures/tracking.png" alt="figure" width="800">
+
 
 -----
 > University of Toronto's [Dynamic Systems Lab](https://github.com/utiasDSL) / [Vector Institute](https://github.com/VectorInstitute) /  [Mitacs](https://www.mitacs.ca/en/projects/multi-agent-reinforcement-learning-decentralized-uavugv-cooperative-exploration)
