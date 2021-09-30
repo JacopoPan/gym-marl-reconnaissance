@@ -59,11 +59,11 @@ $ python3 ./experiments/debug.py
 ```
 Learn using [`stable-baselines3`](https://stable-baselines3.readthedocs.io/en/master/)
 ```
-$ python ./experiments/train.py --algo <a2c | ppo> --yaml <filname in ./experiments/configurations/>
+$ python3 ./experiments/train.py --algo <a2c | ppo> --yaml <filname in ./experiments/configurations/>
 ```
 Replay a trained agent
 ```
-$ python ./experiments/test.py --exp ./results/exp--<algo>--<config>--<date>_<time>
+$ python3 ./experiments/test.py --exp ./results/exp--<algo>--<config>--<date>_<time>
 ```
 
 ## Results
