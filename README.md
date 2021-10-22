@@ -68,11 +68,11 @@ $ python3 ./experiments/test.py --exp ./results/exp--<algo>--<config>--<date>_<t
 
 ## Results
 
-Task assignment
+Task assignment (1 UAV and 1 UGV vs 2 targets and 1 neutral)
 
 <img src="figures/task.png" alt="figure" width="800">
 
-Tracking
+Tracking  (1 UAV *or* 1 UGV vs 1 target, with or without 1 neutral)
 
 <img src="figures/tracking.png" alt="figure" width="800">
 
