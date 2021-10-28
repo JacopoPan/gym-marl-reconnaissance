@@ -1,8 +1,8 @@
 # TODOs, debugging, and temporary files
 TODOs.md
-experiments/launch.sh
+#experiments/launch.sh
 experiments/temp.py
-experiments/configurations/ex*.yaml
+#experiments/configurations/ex*.yaml
 saves/*.mp4
 results/*exp--*
 results/list.txt
