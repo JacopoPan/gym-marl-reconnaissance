@@ -6,7 +6,7 @@ Example
 -------
 In a terminal, run as:
 
-    $ python train.py --algo <a2c | ppo | sac | td3 | ddpg>
+    $ python train.py --algo <a2c | ppo | sac | td3 | ddpg> --yaml <yaml file in configurations/> --steps <number>
 
 """
 import os
