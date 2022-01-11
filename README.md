@@ -4,7 +4,7 @@ Gym environments for heterogeneous multi-agent reinforcement learning in non-sta
 
 > This repository's `master` branch is work in progress, please `git pull` frequently and feel free to open new [issues](https://github.com/JacopoPan/gym-marl-reconnaissance/issues) for any undesired, unexpected, or (presumably) incorrect behavior. Thanks 🙏
 
-> Also see how to programmatically control real RoboMaster hardware (S1, Tello Talent, etc.) [here](https://github.com/JacopoPan/a-minimalist-guide/blob/master/Part7-Heterogeneous-Multirobot-Teams-with-the-RoboMaster-SDK.md) (WIP)
+> Also see how to programmatically control real RoboMaster hardware (S1 UGV, Tello Talent UAV) in Python [here](https://github.com/JacopoPan/a-minimalist-guide/blob/master/Part7-Heterogeneous-Multirobot-Teams-with-the-RoboMaster-SDK.md)
 
 <img src="figures/schematics.png" alt="figure" width="800">
 
